@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Time & People Management - pessoas</title>
+<link rel="stylesheet" href="./css/tpm.css">
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+<script src="connect.js"></script>
+<script src="functions.js"></script>
+<script type="text/javascript" src="nogray_js/1.2.2/ng_lite.js"></script>
+<script type="text/javascript" src="nogray_js/1.2.2/ng_ui.js"></script>
+<script type="text/javascript" src="nogray_js/1.2.2/components/calendar_lite.js"></script>
+<script language="javascript">
+function insert_pessoa()
+{
+// Add a new document in collection "pessoas"
+	var apelido_i = document.getElementById("apelido_i").value;
+	var nome_i = document.getElementById("nome_i").value;
+	var email_i = document.getElementById("email_i").value;
+	var funcao_i = document.getElementById("funcao_i").value;
+	var nivel_i = document.getElementById("nivel_i").value;
+	var skype_i = document.getElementById("skype_i").value;
+	var status_i = document.getElementById("status_i").checked;
+
+	var data_nasc_i = document.getElementById("data_nasc_i").value;
+	if (data_nasc_i == "") { alert("Preencher a Data de Nascimento"); return false;	};
+	if (apelido_i == "") { alert("Preencher o Apelido"); return false; };
+	if (nome_i == "") { alert("Preencher o Nome"); return false; };
+	var dateParts = data_nasc_i.split("/");
+	var ISODate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+	data_nasc_i = new Date(ISODate).toISOString().slice(0, -1);
+
+ 
+	db.collection("pessoas").doc(apelido_i).set({
+		nome: nome_i,
+		apelido: apelido_i,
+		funcao: funcao_i,
+		nivel: nivel_i,
+		email: email_i,
+		skype: skype_i,
+		data_nasc: new Date(data_nasc_i),
+		status: status_i
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+		window.location="pessoas.htm";
+
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML =  errorMessage;
+	});
+
+}
+
+function delete_pessoa(id_pessoa)
+{
+	
+	if (id_pessoa == null) {
+		id_pessoa = document.getElementById("apelido_i").value;
+	};
+	
+	
+	var r = confirm("Confirma Exclus?o de " + id_pessoa );
+	if (r == true) {
+		// Delete document in collection "pessoas"  
+		  
+		  db.collection("pessoas").doc(id_pessoa).delete()
+		  .then(function() {
+			document.getElementById("msg_auth").innerHTML =  " Excluido";
+			console.log("Document successfully deleted!");
+			window.location="pessoas.htm";
+		}).catch(function(error) {
+			console.error("Error removing document: ", error);
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					document.getElementById("msg_auth").innerHTML =  errorMessage;
+		});
+	} 
+	 
+}
+
+function edit_pessoa(id_pessoa)
+{
+
+	if (id_pessoa == null ) {id_pessoa ="xxxxxxxxxxxxxxxxxxx"};
+// Esconde a lista e Mostra o Formulario de Edi??o
+	document.getElementById("logado").style.display = "none";
+	document.getElementById("formulario").style.display = "block";
+	
+	db.collection("pessoas").doc(id_pessoa).get().
+	then(function(doc) {
+    if (doc.exists) {
+        document.getElementById("nome_i").value = doc.data().nome;
+        document.getElementById("apelido_i").value = doc.data().apelido;
+        document.getElementById("email_i").value = doc.data().email;
+        document.getElementById("funcao_i").value = doc.data().funcao;
+        document.getElementById("nivel_i").value = doc.data().nivel;
+        document.getElementById("skype_i").value = doc.data().skype;
+		data_lida = doc.data().data_nasc.toString();
+		data_lida = data_lida.replace("Timestamp(seconds=", "");
+		data_lida = data_lida.substr(0, data_lida.indexOf(","));
+		data_lida = data_lida * 1000 ;
+		//console.log(data_lida);
+		d = new Date(data_lida);
+		dia = d.getDate();
+		if (dia < 10) { dia = "0" + dia; }
+		mes = d.getMonth();
+		mes += 1;
+		if (mes < 10) { mes = "0" + mes; }
+		ano = d.getFullYear();
+		data_formatada = dia + "/" + mes + "/" + ano
+		data_calendario = ano + "-" + mes + "-" + dia
+    document.getElementById("data_nasc_i").value = data_calendario;
+		document.getElementById("status_i").checked = doc.data().status;
+        
+    } else {
+        // doc.data() will be undefined in this case
+		data_calendario = "2000-01-01";
+        console.log("No such document!");
+    }
+	
+		// Chamada da fun??o de calendario -------------------
+	//	ng.ready( function() {
+	//		var my_basic_cal = new ng.Calendar({
+	//			input: 'data_nasc_i',      // the input field id
+	//			selected_date: data_calendario,      // the initial date field id
+	//			start_date: data_calendario,    // the start date (default is today)
+	//			end_date: 'year + 100',      // the end date (related to start_date, 4 years from today)
+	//			//display_date: new Date().data_calendario,   // the display date (default is start_date)
+	//			date_format: 'd/m/Y',
+	//			events: { onOpen:function () { this.set_start_date ('1900-01-01'); }}
+	//		});
+	//	});
+		//----------------------------------------------------
+	
+	
+	}).catch(function(error) {
+    console.log("Error getting document:", error);
+	});  
+
+}
+
+function salvar_pessoa()
+{
+// Save document in collection "pessoas"  
+  
+	return true;
+
+}
+
+</script>
+
+</head>
+
+<body bgcolor="#FFFFFF" topmargin=0>
+<div align="center" class="divPrincipal">
+<img src="./img/tpm_logo_64.png" border="0" align="absmiddle">Time & People Management<br>
+	<table border="0" cellspacing="0" cellpadding="5"  bgcolor="#FFFFFF" width="100%">
+		<tr align=center>
+			<td align=left>
+				<div w3-include-html="menu.htm"></div>			
+			</td>
+			<td align=center><span id="msg_auth" class="mensagem"></span>&nbsp;</td>
+			<td align=right>
+				
+				<a href="#" onclick="fazer_logoff();"><img src="./img/ico_fechar.png" border="0" title="Sair">
+			</td>
+		</tr>
+	</table>
+	<div id="logado" style="display:block;">		
+		<div class="div-table">
+			<div class="wrapper">
+			  <div>&nbsp;</div>
+			  <div>Cadastro de pessoas</div>
+			  <div style="text-align:right;"><a href='#'><img src='./img/add.png' title='Adicionar' onclick='edit_pessoa();'></a></div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="box_th a">Apelido</div>
+					<div class="box_th b">Nome</div>
+				  </div>
+				  <div class="row col_2" id="list_div">
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="formulario" style="display:none;">
+		<div class="div-table">
+			<div class="tr">
+			  <div>Cadastro de pessoas</div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="label_form">Apelido : </div>
+					<div class="field_form"><input type="text" id="apelido_i" size="20" maxlength="16"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Nome : </div>
+					<div class="field_form"><input type="text" id="nome_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Função : </div>
+					<div class="field_form" >
+					<select name='funcao_i' size='1' id="funcao_i">
+							<-- Drop Down -->	
+					</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Nível : </div>
+					<div class="field_form">
+						<select name='nivel_i' size='1' id="nivel_i">
+							<option value='Trainee'>Trainee</option>
+							<option value='Junior'>Junior</option>
+							<option value='Pleno'>Pleno</option>
+							<option value='Senior'>Senior</option>
+							<option value='Master'>Master</option>
+						</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">RG : </div>
+					<div class="field_form"><input type="text" id="rg_i" size="20" maxlength="20"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">CPF : </div>
+					<div class="field_form"><input type="text" id="cpf_i" size="20" maxlength="20"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Fone : </div>
+					<div class="field_form"><input type="text" id="fone_i" size="20" maxlength="20"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Skype : </div>
+					<div class="field_form"><input type="text" id="skype_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Data Nasc : </div>
+					<div class="field_form"><input type="date" id="data_nasc_i" size="10" maxlength="10"> 
+					<script>
+					
+						
+					</script>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Area : </div>
+					<div class="field_form"><input type="text" id="area_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Especialidades : </div>
+					<div class="field_form"><input type="text" id="especialidades_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Status : </div>
+					<div class="field_form"><input type="checkbox" id="status_i" checked> Ativo</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">E-Mail : </div>
+					<div class="field_form"><input type="text" id="email_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Certificações : </div>
+					<div class="field_form"><input type="text" id="certificacoes_i" size="20" maxlength="60"></div>
+				  </div>	  
+				</div>
+			</div>
+			<div class="tr">
+				<div class="row col_2">
+					<div><input type="button" value="Excluir"		name="botao" id="excluir" 	onclick="delete_pessoa();" class="stBotao"></div>
+					<div><input type="button" value="Salvar" 		name="botao" id="salvar" 	onclick="insert_pessoa();" class="stBotao"></div>
+				</div>
+			</div>	
+		</div>
+	</div>
+<script>
+const list_div = document.querySelector("#list_div");
+var linha = "";
+db.collection("pessoas")
+	.onSnapshot(function(querySnapshot) {
+	
+		querySnapshot.docChanges.forEach(function(change) {
+		
+			if (change.type === "added" ){
+				linha  =  "<div class='row col_2'>"
+				linha +=  "<div class='box h'><a href='#' onclick=\"edit_pessoa('" + change.doc.data().apelido + "');\">" + change.doc.data().apelido + "</a></div>"
+				linha +=  "<div class='box i'>" + change.doc.data().nome    + "</div>"
+//				linha +=  "<div class='box j'>" + change.doc.data().email   + "</div>"
+				linha +=  "<div>";
+//				linha +=  "<a href='#'><img src='./img/delete.png' title='Excluir' ";
+//				linha +=  "onclick=\"delete_pessoa('" + change.doc.data().apelido + "');\"></a> " ;
+//				linha +=  "<a href='#'><img src='./img/edit.png' title='Editar' ";
+//				linha +=  "onclick=\"edit_pessoa('" + change.doc.data().apelido + "');\"></a>" ;
+				linha +=  "</div></div>" ;
+
+				list_div.innerHTML +=  linha;
+			}
+ 
+		 });
+});
+// Monta dropdown de funcoes
+//const funcao = document.querySelector("#funcao");
+
+db.collection("funcoes")
+	.onSnapshot(function(querySnapshot) {
+	
+		querySnapshot.docChanges
+			.forEach(function(change) {
+		
+				if (change.type === "added" ){
+					funcao_i.innerHTML +=  "<option value='" + change.doc.data().codigo + "'>" + change.doc.data().codigo + "</option>" ;
+				}
+	 
+			});
+});
+
+
+</script>
+
+<p align=right id="rodape">
+<script src="rodape.js"></script>
+
+<script>
+includeHTML();
+</script>
+</body>
+</html>

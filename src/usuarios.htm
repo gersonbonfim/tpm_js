@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Time & People Management - Usuarios</title>
+<link rel="stylesheet" href="./css/tpm.css">
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+<script src="connect.js"></script>
+<script src="functions.js"></script>
+<script language="javascript">
+
+function cadastrar_usuario()
+{
+  if (document.getElementById("login_i").value == "")
+  {
+    document.getElementById("msg_auth").innerHTML = "Digite o Usuário.";
+    return (false);
+  }
+  else
+  {
+	login_digitado = document.getElementById("login_i").value;
+  }
+  
+  if (document.getElementById("senha_i").value == "")
+  {
+    document.getElementById("msg_auth").innerHTML = "Digite a Senha.";
+    return (false);
+  }
+  else
+  {
+	senha_digitada = document.getElementById("senha_i").value;
+  }
+
+ 
+//Ação de criar usuário 
+    firebase.auth().createUserWithEmailAndPassword(login_digitado, senha_digitada )
+        .then(function (event) {
+			document.getElementById("msg_auth").innerHTML =  "Usuário cadastrado.";		
+			return (true);
+        })
+        .catch(function (error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML =  errorMessage;
+			return (false);
+        });
+
+}
+
+</script>
+
+</head>
+
+<body bgcolor="#FFFFFF" topmargin=0>
+<div align="center" class="divPrincipal">
+<img src="./img/tpm_logo_64.png" border="0" align="absmiddle">Time & People Management<br>
+	<table border="0" cellspacing="0" cellpadding="5"  bgcolor="#FFFFFF" width="100%">
+		<tr align=center>
+			<td align=left>
+				<div w3-include-html="menu.htm"></div>			
+			</td>
+			<td align=center><span id="msg_auth" class="mensagem"></span>&nbsp;</td>
+			<td align=right><a href="#" onclick="fazer_logoff();"><img src="./img/ico_fechar.png" border="0" title="Sair"></td>
+		</tr>
+	</table>
+	<div id="logado">
+		  <div class="div-table" ">
+			<div class="tr">
+			  <div>Cadastro de Novo Usuario</div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="box_th e">Login</div>
+					<div class="box_th d">Senha</div>
+					<div >&nbsp;</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="box_th e"><input type="text" id="login_i" size="30" maxlength="60"></div>
+					<div class="box_th d"><input type="password" id="senha_i" size="10" maxlength="20"></div>
+					<div ><a href="#"><img src="./img/add.png" onclick="cadastrar_usuario();" title='Adicionar'></a></div>
+				  </div>
+				  <div class="row col_2" id="list_div">
+				  </div>
+				</div>
+			</div>
+	 </div>
+</div>
+
+<p align=right id="rodape">
+<script src="rodape.js"></script>
+
+<script>
+includeHTML();
+</script>
+</body>
+</html>

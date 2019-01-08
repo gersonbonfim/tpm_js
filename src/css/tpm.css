@@ -1,0 +1,179 @@
+
+ A:link    { text-decoration:none; color: black;}
+ A:visited { text-decoration:none; color: black;}
+ A:hover   { text-decoration:underline;  color: black;}
+ A:active  { text-decoration:none }
+
+table {
+    border-radius: 10px;
+}
+
+td {
+    border-radius: 10px;
+	font-family: arial;
+	color: black;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+.divPrincipal {
+	font-family:arial;
+	color: black;
+	font-size:  15px;
+	font-weight: bold;
+}
+.titulo_tabela {
+	font-family:arial;
+	color: blue;
+	font-size: 15px;
+	font-style: italic;
+	font-weight: bold;
+}
+.mensagem {
+	font-family:arial;
+	color: red;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+.stBotao {
+	border-color:#0000FF; 
+	border-style: solid; 
+	border-width: 4; 
+	border-radius: 5px; 
+	background-color: #1111FF; 
+	color: #CCCCCC;
+	font-weight: bold;
+}
+	
+.main_list {
+	font-weight: normal;
+}
+
+.div-table {
+	display: table;
+	width: 100%;
+	background-color: #eee;
+	border: 1px solid #666666;
+	border-spacing: 5px;
+}
+.tr {
+	display: table-row;
+	width: 100%;
+}
+.th {
+	display: table-cell;
+	font-style: italic;
+	font-weight: bold;
+	vertical-align:top;
+	background-color: #AABBFF;
+	padding:5px 10px;
+	width: 100%;
+
+}
+.tc {
+	display: table-cell;
+	vertical-align:top;
+	background-color: #ccc;
+	padding:5px 10px;
+	width: 100%;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(50px, 1fr)) 40px;
+  background-color: #eee;
+  color: #000;
+  grid-gap: 5px;
+
+}
+
+.row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-gap: 5px;
+}
+
+.col_3 {
+	  grid-template-columns: repeat(3, minmax(50px, 1fr)) 40px;
+}
+.col_2 {
+	  grid-template-columns: repeat(2, minmax(50px, 1fr)) 40px;
+}
+.col_1 {
+	  grid-template-columns: repeat(1, minmax(50px, 1fr)) 40px;
+}
+
+.box_th {
+  background-color: #AABBFF;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px 5px;
+  font-size: 100%;
+}
+
+.box {
+  background-color: #ccc;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px 5px;
+  font-size: 80%;
+  font-weight: normal;
+}
+
+.label_form {
+  background-color: #AABBFF;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px 5px;
+  font-size: 100%;
+  text-align: right;
+}
+
+.field_form {
+  background-color: #ccc;
+  color: #000;
+  border-radius: 5px;
+  padding: 5px 5px;
+  font-size: 80%;
+  font-weight: normal;
+  text-align: left;
+}
+
+.dropbtn {
+    background-color: #FFF;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+
+.dropdown:hover .dropbtn {
+    background-color: #EEE;
+}

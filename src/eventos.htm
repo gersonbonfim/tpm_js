@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Time & People Management - Eventos</title>
+<link rel="stylesheet" href="./css/tpm.css">
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+<script src="connect.js"></script>
+<script src="functions.js"></script>
+<script language="javascript">
+function insert_evento()
+{
+	id_evento = document.getElementById("eventoid").value;
+
+	if (id_evento == "" ) { 
+	}
+	
+	
+// Add a new document in collection "eventos"
+	var pessoa_i = document.getElementById("pessoa_i").value;
+	var cliente_i = document.getElementById("cliente_i").value;
+	var projeto_i = document.getElementById("projeto_i").value;
+	var status_i = document.getElementById("status_i").value;
+	var local_i = document.getElementById("local_i").value;
+	var gerente_i = document.getElementById("gerente_i").value;
+	var expediente_i = document.getElementById("expediente_i").value;
+	var dataini_i = document.getElementById("dataini_i").value;
+	var datafim_i = document.getElementById("datafim_i").value;
+	if (dataini_i == "") { alert("Preencher a Data Inicial"); return false;	};
+	if (datafim_i == "") { alert("Preencher a Data Final"); return false;	};
+	if (pessoa_i == "") { alert("Preencher a Pessoa"); return false; };
+	if (cliente_i == "") { alert("Preencher o Cliente"); return false; };
+
+	var dateParts = dataini_i.split("/");
+	var ISODate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+	dataini_i = new Date(ISODate).toISOString().slice(0, -1);
+
+ 	dateParts = datafim_i.split("/");
+	ISODate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
+	datafim_i = new Date(ISODate).toISOString().slice(0, -1);
+
+	if (id_evento == "" ) { 
+	// Inclusao
+	db.collection("eventos").doc().set({
+		pessoa: pessoa_i,
+		cliente: cliente_i,
+		projeto: projeto_i,
+		status: status_i,
+		dataini: new Date(dataini_i),
+		datafim: new Date(datafim_i),
+		local: local_i,
+		gerente: gerente_i,
+		expediente: expediente_i
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+		window.location="eventos.htm";
+
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML =  errorMessage;
+	});
+	}
+	else {
+	// Alteracao
+	db.collection("eventos").doc(id_evento).set({
+		pessoa: pessoa_i,
+		cliente: cliente_i,
+		projeto: projeto_i,
+		status: status_i,
+		dataini: new Date(dataini_i),
+		datafim: new Date(datafim_i),
+		local: local_i,
+		gerente: gerente_i,
+		expediente: expediente_i
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+		window.location="eventos.htm";
+
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML =  errorMessage;
+	});
+	}
+
+	
+
+}
+
+function delete_evento(id_evento)
+{
+	
+	if (id_evento == null) {
+		id_evento = document.getElementById("eventoid").value;
+	};
+	pessoa_i = document.getElementById("pessoa_i").value;
+	
+	var r = confirm("Confirma Exclusï¿½o de " + pessoa_i );
+	if (r == true) {
+		// Delete document in collection "eventos"  
+		  
+		  db.collection("eventos").doc(id_evento).delete()
+		  .then(function() {
+			document.getElementById("msg_auth").innerHTML =  " Excluido";
+			console.log("Document successfully deleted!");
+			window.location="eventos.htm";
+		}).catch(function(error) {
+			console.error("Error removing document: ", error);
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					document.getElementById("msg_auth").innerHTML =  errorMessage;
+		});
+	} 
+	 
+}
+
+function edit_evento(id_evento)
+{
+
+	if (id_evento == null ) {id_evento ="xxxxxxxxxxxxxxxxxxx"};
+// Esconde a lista e Mostra o Formulario de Ediï¿½ï¿½o
+	document.getElementById("logado").style.display = "none";
+	document.getElementById("formulario").style.display = "block";
+	monta_form();
+	//console.log(id_evento);
+	db.collection("eventos").doc(id_evento).get().
+	then(function(doc) {
+    if (doc.exists) {
+	
+        document.getElementById("eventoid").value = doc.id;
+        document.getElementById("pessoa_i").value = doc.data().pessoa;
+        document.getElementById("cliente_i").value = doc.data().cliente;
+        document.getElementById("projeto_i").value = doc.data().projeto;
+        document.getElementById("status_i").value = doc.data().status;
+        document.getElementById("local_i").value = doc.data().local;
+        document.getElementById("gerente_i").value = doc.data().gerente;
+        document.getElementById("expediente_i").value = doc.data().expediente;
+		
+		data_lida = doc.data().dataini.toString();
+		data_lida = data_lida.replace("Timestamp(seconds=", "");
+		data_lida = data_lida.substr(0, data_lida.indexOf(","));
+		data_lida = data_lida * 1000 ;
+		d = new Date(data_lida);
+		dia = d.getDate();
+		if (dia < 10) { dia = "0" + dia; }
+		mes = d.getMonth();
+		mes += 1;
+		if (mes < 10) { mes = "0" + mes; }
+		ano = d.getFullYear();
+		data_formatada = dia + "/" + mes + "/" + ano
+		data_formatada_ini = dia + "/" + mes + "/" + ano
+		data_calendario = ano + "-" + mes + "-" + dia
+		data_calendario_ini = ano + "-" + mes + "-" + dia
+        document.getElementById("dataini_i").value = data_calendario;
+		
+		data_lida = doc.data().datafim.toString();
+		data_lida = data_lida.replace("Timestamp(seconds=", "");
+		data_lida = data_lida.substr(0, data_lida.indexOf(","));
+		data_lida = data_lida * 1000 ;
+		d = new Date(data_lida);
+		dia = d.getDate();
+		if (dia < 10) { dia = "0" + dia; }
+		mes = d.getMonth();
+		mes += 1;
+		if (mes < 10) { mes = "0" + mes; }
+		ano = d.getFullYear();
+		data_formatada = dia + "/" + mes + "/" + ano
+		data_calendario = ano + "-" + mes + "-" + dia
+		data_calendario_fim = ano + "-" + mes + "-" + dia
+        document.getElementById("datafim_i").value = data_calendario;
+        
+    } else {
+        // doc.data() will be undefined in this case
+		data_calendario_ini = "'today'";
+		data_calendario_fim = "'today'";
+		console.log("No such document!");
+    }
+	
+	
+	}).catch(function(error) {
+    console.log("Error getting document:", error);
+	});  
+
+}
+
+function salvar_evento()
+{
+// Save document in collection "eventos"  
+  
+	return true;
+
+}
+
+</script>
+
+</head>
+
+<body bgcolor="#FFFFFF" topmargin=0>
+<div align="center" class="divPrincipal">
+<img src="./img/tpm_logo_64.png" border="0" align="absmiddle">Time & People Management<br>
+	<table border="0" cellspacing="0" cellpadding="5"  bgcolor="#FFFFFF" width="100%">
+		<tr align=center>
+			<td align=left>
+				<div w3-include-html="menu.htm"></div>			
+			</td>
+			<td align=center><span id="msg_auth" class="mensagem"></span>&nbsp;</td>
+			<td align=right>
+				
+				<a href="#" onclick="fazer_logoff();"><img src="./img/ico_fechar.png" border="0" title="Sair">
+			</td>
+		</tr>
+	</table>
+	<div id="logado" style="display:block;">		
+		<div class="div-table">
+			<div class="wrapper">
+			  <div>&nbsp;</div>
+			  <div>Cadastro de Eventos</div>
+			  <div style="text-align:right;"><a href='#'><img src='./img/add.png' title='Adicionar' onclick='edit_evento();'></a></div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="box_th a">Pessoa</div>
+					<div class="box_th b">Cliente</div>
+				  </div>
+				  <div class="row col_2" id="list_div">
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="formulario" style="display:none;">
+		<div class="div-table">
+			<div class="tr">
+			  <div>Cadastro de eventos</div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="label_form">Pessoa : </div>
+					<div class="field_form">
+					<select name='pessoa_i' size='1' id="pessoa_i">
+							<-- Drop Down -->	
+					</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Cliente : </div>
+					<div class="field_form">
+					<select name='cliente_i' size='1' id="cliente_i">
+							<-- Drop Down -->	
+					</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Projeto : </div>
+					<div class="field_form">
+					<select name='projeto_i' size='1' id="projeto_i">
+							<-- Drop Down -->	
+					</select>
+					</div>
+				  </div>  
+				  <div class="row col_2">
+					<div class="label_form">Gerente : </div>
+					<div class="field_form" >
+					<select name='gerente_i' size='1' id="gerente_i">
+							<-- Drop Down -->	
+					</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Expediente : </div>
+					<div class="field_form">
+						<select name='expediente_i' size='1' id="expediente_i">
+							<option value=''>--- Selecione ---</option>
+							<option value='Dia Inteiro'>Dia Inteiro</option>
+							<option value='Manhã'>Manhã</option>
+							<option value='Tarde'>Tarde</option>
+							<option value='Noite'>Noite</option>
+						</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Local : </div>
+					<div class="field_form">
+						<select name='local_i' size='1' id="local_i">
+							<option value=''>--- Selecione ---</option>
+							<option value='Presencial'>Presencial</option>
+							<option value='Remoto'>Remoto</option>
+							<option value='Consultoria'>Consultoria</option>
+						</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Status : </div>
+					<div class="field_form">
+						<select name='status_i' size='1' id="status_i">
+							<option value=''>--- Selecione ---</option>
+							<option value='A Confirmar'>A Confirmar</option>
+							<option value='Ausente'>Ausente</option>
+							<option value='Confirmado'>Confirmado</option>
+							<option value='Disponivel'>Disponivel</option>
+							<option value='Ferias'>Ferias</option>
+							<option value='Fixo'>Fixo</option>
+							<option value='Pre-vendas'>Pre-vendas</option>
+							<option value='Plantao'>Plantao</option>
+						</select>
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Data Inicial: </div>
+					<div class="field_form"><input type="date" id="dataini_i" size="10" maxlength="10">
+					</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Data Final: </div>
+					<div class="field_form"><input type="date" id="datafim_i" size="10" maxlength="10">
+					</div>
+				  </div>
+				</div>
+			</div>
+			<div class="tr">
+				<div class="row col_2">
+					<input type="hidden" id="eventoid" value="" name="eventoid">
+					<div><input type="button" value="Excluir"		name="botao" id="excluir" 	onclick="delete_evento();" class="stBotao"></div>
+					<div><input type="button" value="Salvar" 		name="botao" id="salvar" 	onclick="insert_evento();" class="stBotao"></div>
+				</div>
+			</div>	
+		</div>
+	</div>
+<script>
+
+const list_div = document.querySelector("#list_div");
+var linha = "";
+db.collection("eventos")
+	.onSnapshot(function(querySnapshot) {
+	
+		querySnapshot.docChanges.forEach(function(change) {
+		
+			if (change.type === "added" ){
+				linha  =  "<div class='row col_2'>"
+				linha +=  "<div class='box h'><a href='#' onclick=\"edit_evento('" + change.doc.id + "');\">" + change.doc.data().pessoa + "</a></div>"
+				linha +=  "<div class='box i'>" + change.doc.data().cliente    + "</div>"
+				linha +=  "<div>";
+				linha +=  "</div></div>" ;
+
+				list_div.innerHTML +=  linha;
+			}
+ 
+		 });
+});
+
+function monta_form()
+{
+// Monta dropdown de pessoas
+pessoa_i.innerHTML +=  "<option value=''>--- Selecione ---</option>" ;
+db.collection("pessoas")
+	.onSnapshot(function(querySnapshot) {
+		querySnapshot.docChanges
+			.forEach(function(change) {
+				if (change.type === "added" ){
+					pessoa_i.innerHTML +=  "<option value='" + change.doc.data().apelido + "'>" + change.doc.data().apelido + "</option>" ;
+				}
+			});
+});
+
+// Monta dropdown de clientes
+cliente_i.innerHTML +=  "<option value=''>--- Selecione ---</option>" ;
+db.collection("clientes")
+	.onSnapshot(function(querySnapshot) {
+		querySnapshot.docChanges
+			.forEach(function(change) {
+				if (change.type === "added" ){
+					cliente_i.innerHTML +=  "<option value='" + change.doc.data().apelido + "'>" + change.doc.data().apelido + "</option>" ;
+				}
+			});
+});
+
+// Monta dropdown de pojetos
+projeto_i.innerHTML +=  "<option value=''>--- Selecione ---</option>" ;
+db.collection("projetos")
+	.onSnapshot(function(querySnapshot) {
+		querySnapshot.docChanges
+			.forEach(function(change) {
+				if (change.type === "added" ){
+					projeto_i.innerHTML +=  "<option value='" + change.doc.data().codigo + "'>" + change.doc.data().nome + "</option>" ;
+				}
+			});
+});
+
+// Monta dropdown de gerentes
+gerente_i.innerHTML +=  "<option value=''>--- Selecione ---</option>" ;
+db.collection("pessoas").where("funcao", "==", 'Gerente')
+	.onSnapshot(function(querySnapshot) {
+		querySnapshot.docChanges
+			.forEach(function(change) {
+				if (change.type === "added" ){
+					gerente_i.innerHTML +=  "<option value='" + change.doc.data().apelido + "'>" + change.doc.data().apelido + "</option>" ;
+				}
+			});
+});
+
+}
+</script>
+
+<p align=right id="rodape">
+<script src="rodape.js"></script>
+
+<script>
+includeHTML();
+</script>
+</body>
+</html>

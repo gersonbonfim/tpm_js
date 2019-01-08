@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Time & People Management - Projetos</title>
+<link rel="stylesheet" href="./css/tpm.css">
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+<script src="connect.js"></script>
+<script src="functions.js"></script>
+<script>
+function insert_projeto()
+{
+ 
+// Add a new document in collection "projetos"
+	var nome_i = document.getElementById("nome_i").value;
+	var codigo_i = document.getElementById("codigo_i").value;
+  
+	db.collection("projetos").doc(codigo_i).set({
+		nome: nome_i,
+		codigo: codigo_i,
+	})
+	.then(function() {
+		console.log("Document successfully written!");
+		document.getElementById("nome_i").value = "";
+		document.getElementById("codigo_i").value = "";
+		window.location="projetos.htm";
+
+	})
+	.catch(function(error) {
+		console.error("Error writing document: ", error);
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML =  errorMessage;
+	});
+
+}
+
+function delete_projeto(id_projeto)
+{
+ 
+	var r = confirm("Confirma Exclusão de " + id_projeto );
+	if (r == true) {
+		// Delete document in collection "projetos"  
+		  
+		  db.collection("projetos").doc(id_projeto).delete()
+		  .then(function() {
+			document.getElementById("msg_auth").innerHTML =  " Excluido";
+			console.log("Document successfully deleted!");
+			window.location="projetos.htm";
+		}).catch(function(error) {
+			console.error("Error removing document: ", error);
+					var errorCode = error.code;
+					var errorMessage = error.message;
+					document.getElementById("msg_auth").innerHTML =  errorMessage;
+		});
+	} 
+	 
+}
+
+</script>
+
+</head>
+
+<body bgcolor="#FFFFFF" topmargin=0>
+<div align="center" class="divPrincipal">
+<img src="./img/tpm_logo_64.png" border="0" align="absmiddle">Time & People Management<br>
+	<table border="0" cellspacing="0" cellpadding="5"  bgcolor="#FFFFFF" width="100%">
+		<tr align=center>
+			<td align=left>
+				<div w3-include-html="menu.htm"></div>			
+			</td>
+			<td align=center><span id="msg_auth" class="mensagem"></span>&nbsp;</td>
+			<td align=right><a href="#" onclick="fazer_logoff();"><img src="./img/ico_fechar.png" border="0" title="Sair"></td>
+		</tr>
+	</table>
+	<div id="logado">
+		  <div class="div-table" ">
+			<div class="tr">
+			  <div>Cadastro de Projetos</div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="box_th e">Codigo</div>
+					<div class="box_th d">Nome</div>
+					<div >&nbsp;</div>
+				  </div>
+				  <div class="row col_2">
+					<div class="box_th e"><input type="text" id="codigo_i" size="8" maxlength="16"></div>
+					<div class="box_th d"><input type="text" id="nome_i" size="20" maxlength="60"></div>
+					<div ><a href="#"><img src="./img/save.png" onclick="insert_projeto();" title='Salvar'></a></div>
+				  </div>
+				  <div class="row col_2" id="list_div">
+				  </div>
+				</div>
+			</div>
+	 </div>
+</div>
+<script>
+const list_div = document.querySelector("#list_div");
+
+db.collection("projetos")
+	.onSnapshot(function(querySnapshot) {
+	
+		querySnapshot.docChanges.forEach(function(change) {
+		
+			if (change.type === "added" ){
+				list_div.innerHTML +=  "<div class='row col_2'><div class='box h'>" + change.doc.data().codigo + "</div><div class='box i'>" + change.doc.data().nome + "</div><div><a href='#'><img src='./img/delete.png' title='Excluir "  + change.doc.data().codigo +  "' onclick=\"delete_projeto('" + change.doc.data().codigo + "');\"></a></div></div>" ;
+			}
+ 
+		 });
+});
+</script>
+
+<p align=right id="rodape">
+<script src="rodape.js"></script>
+
+<script>
+includeHTML();
+</script>
+</body>
+</html>

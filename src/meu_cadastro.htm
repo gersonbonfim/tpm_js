@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<title>Time & People Management - Usuarios</title>
+<link rel="stylesheet" href="./css/tpm.css">
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase-firestore.js"></script>
+<script src="connect.js"></script>
+<script src="functions.js"></script>
+<script language="javascript">
+
+function update_usuario()
+{
+	user_displayName = document.getElementById("user_displayName_i").value;
+	user_email = document.getElementById("user_email_i").value;
+	user_emailVerified = document.getElementById("user_emailVerified_i").checked;
+	user_photoURL = document.getElementById("user_photoURL_i").value;
+	user_isAnonymous = document.getElementById("user_isAnonymous_i").checked;
+	user_uid = document.getElementById("user_uid_i").value;
+	user_providerData = document.getElementById("user_providerData_i").value;
+	user_token = document.getElementById("user_token_i").value;
+
+	firebase.auth().onAuthStateChanged(function(user) {
+	if (user) {
+		// Atualizar o perfil
+		document.getElementById("msg_auth").innerHTML = "";
+		user.updateProfile({
+			displayName: user_displayName,
+			emailVerified: user_emailVerified,
+			isAnonymous: user_isAnonymous,
+			photoURL: user_photoURL
+		}).then(function() {
+			document.getElementById("msg_auth").innerHTML += "<br>Usuário atualizado.";
+		}).catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML +=  "<br>" + errorMessage;
+			return (false);
+		});
+		
+		// Atualizar o e-mail 
+		user.updateEmail(user_email).then(function() {
+			document.getElementById("msg_auth").innerHTML += "<br>Email atualizado.";
+		}).catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+			document.getElementById("msg_auth").innerHTML +=  "<br>" + errorMessage;
+			return (false);
+		});
+
+		// Atualizar a senha
+		//var newPassword = getASecureRandomPassword();
+		//user.updatePassword(newPassword).then(function() {
+		  // Update successful.
+		//}).catch(function(error) {
+		  // An error happened.
+		//});
+	} else {
+		// No user is signed in.
+	  }
+	});
+
+}
+
+</script>
+
+</head>
+
+<body bgcolor="#FFFFFF" topmargin=0 onload="carrega_usuario()">
+<div align="center" class="divPrincipal">
+<img src="./img/tpm_logo_64.png" border="0" align="absmiddle">Time & People Management<br>
+	<table border="0" cellspacing="0" cellpadding="5"  bgcolor="#FFFFFF" width="100%">
+		<tr align=center>
+			<td align=left>
+				<div w3-include-html="menu.htm"></div>			
+			</td>
+			<td align=center><span id="msg_auth" class="mensagem"></span>&nbsp;</td>
+			<td align=right><a href="#" onclick="fazer_logoff();"><img src="./img/ico_fechar.png" border="0" title="Sair"></td>
+		</tr>
+	</table>
+
+	 <div id="formulario" style="display:block;">
+		<div class="div-table">
+			<div class="tr">
+			  <div>Cadastro do Usuário Logado</div>
+			</div>
+			<div class="tr">
+				<div class="wrapper">
+				  <div class="row col_2">
+					<div class="label_form">Nome : </div>
+					<div class="field_form"><input type="text" id="user_displayName_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Email : </div>
+					<div class="field_form"><input type="text" id="user_email_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Email Verificado : </div>
+					<div class="field_form"><input type="checkbox" id="user_emailVerified_i"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Photo : </div>
+					<div class="field_form"><input type="text" id="user_photoURL_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Anonymous : </div>
+					<div class="field_form"><input type="checkbox" id="user_isAnonymous_i"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Uid : </div>
+					<div class="field_form"><input type="text" id="user_uid_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Provider : </div>
+					<div class="field_form"><input type="text" id="user_providerData_i" size="20" maxlength="60"></div>
+				  </div>
+				  <div class="row col_2">
+					<div class="label_form">Token : </div>
+					<div class="field_form"><input type="text" id="user_token_i" size="20" maxlength="60"></div>
+				  </div>	  
+				</div>
+			</div>
+			<div class="tr">
+				<div class="row col_2">
+					<div></div>
+					<div><input type="button" value="Salvar" 		name="botao" id="salvar" 	onclick="update_usuario();" class="stBotao"></div>
+				</div>
+			</div>	
+		</div>
+	</div>
+
+</div>
+<script>
+
+function carrega_usuario()
+{
+	firebase.auth().onAuthStateChanged(function(user) {
+	  if (user) {
+		// User is signed in.
+		user_displayName 	= user.displayName;
+		user_email 			= user.email;
+		user_emailVerified 	= user.emailVerified;
+		user_photoURL 		= user.photoURL;
+		user_isAnonymous 	= user.isAnonymous;
+		user_uid 			= user.uid;
+		user_providerData 	= user.providerData;
+		user_token			= user.getIdToken();
+
+		
+	document.getElementById("user_displayName_i").value = user_displayName;
+	document.getElementById("user_email_i").value = user_email;
+	document.getElementById("user_emailVerified_i").checked = user_emailVerified;
+	document.getElementById("user_photoURL_i").value = user_photoURL;
+	document.getElementById("user_isAnonymous_i").checked = user_isAnonymous;
+	document.getElementById("user_uid_i").value = user_uid;
+	document.getElementById("user_providerData_i").value = user_providerData;
+	document.getElementById("user_token_i").value = user_token;
+	  } else {
+		// No user is signed in.
+	  }
+	});
+}
+
+</script>
+<script>
+includeHTML();
+</script>
+</body>
+</html>
