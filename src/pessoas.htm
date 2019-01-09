@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
 <head>
 <title>Time & People Management - pessoas</title>
 <link rel="stylesheet" href="./css/tpm.css">
@@ -21,6 +22,7 @@ function insert_pessoa()
 	var funcao_i = document.getElementById("funcao_i").value;
 	var nivel_i = document.getElementById("nivel_i").value;
 	var skype_i = document.getElementById("skype_i").value;
+	var certificacoes_i = document.getElementById("certificacoes_i").value;
 	var status_i = document.getElementById("status_i").checked;
 
 	var data_nasc_i = document.getElementById("data_nasc_i").value;
@@ -39,6 +41,7 @@ function insert_pessoa()
 		nivel: nivel_i,
 		email: email_i,
 		skype: skype_i,
+		certificacoes: certificacoes_i,
 		data_nasc: new Date(data_nasc_i),
 		status: status_i
 	})
@@ -100,6 +103,7 @@ function edit_pessoa(id_pessoa)
         document.getElementById("funcao_i").value = doc.data().funcao;
         document.getElementById("nivel_i").value = doc.data().nivel;
         document.getElementById("skype_i").value = doc.data().skype;
+        document.getElementById("certificacoes_i").value = doc.data().certificacoes;
 		data_lida = doc.data().data_nasc.toString();
 		data_lida = data_lida.replace("Timestamp(seconds=", "");
 		data_lida = data_lida.substr(0, data_lida.indexOf(","));
@@ -244,10 +248,6 @@ function salvar_pessoa()
 				  <div class="row col_2">
 					<div class="label_form">Data Nasc : </div>
 					<div class="field_form"><input type="date" id="data_nasc_i" size="10" maxlength="10"> 
-					<script>
-					
-						
-					</script>
 					</div>
 				  </div>
 				  <div class="row col_2">
